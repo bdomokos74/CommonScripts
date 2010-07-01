@@ -1,14 +1,15 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="rootproj"
          default="build" basedir=".">
 
-    <!-- TODO change PROJNAME in both places -->
     <dirname property="root.dir" file="${ant.file.rootproj}"/>
     <property name="script.dir" value="${root.dir}/script"/>
 
     <property file="${user.home}/.build.local.properties"/>
     <property file="${root.dir}/build.properties"/>
 
+    <import file="${script.dir}/generator.xml"/>
     <import file="${script.dir}/ivy-targets.xml"/>
+
     <property name="target.dir" value="${root.dir}/target"/>
     <mkdir dir="${root.dir}/target"/>
     <import file="${script.dir}/script-setup.xml" optional="true"/>

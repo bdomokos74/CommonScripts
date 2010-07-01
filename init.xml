@@ -28,13 +28,17 @@
         <get src="${script.url}/tomcat-users.xml" dest="${script.dir}/tomcat-users.xml"/>
         <get src="${script.url}/tomcat.xml" dest="${script.dir}/tomcat.xml"/>
 
-        <get src="${script.lib.url}/template/lib/_build.xml" dest="${script.dir}/template/lib/_build.xml"/>
-        <get src="${script.lib.url}/template/lib/_ivy.xml" dest="${script.dir}/template/lib/_ivy.xml"/>
-        <get src="${script.lib.url}/template/lib/custom.xml" dest="${script.dir}/template/lib/custom.xml"/>
+        <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/lib/_build.xml"/>
+        <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/lib/_ivy.xml"/>
+        <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/lib/custom.xml"/>
 
         <mkdir dir="${script.dir}/template/web"/>
         <mkdir dir="${script.dir}/template/standalone"/>
 
-
+        <echo message="${line.separator}
+You can start by running:${line.separator}            ant generate-web-proj -Dproj.name=PROJNAME${line.separator}
+to set up a web project skeleton. Type${line.separator}            ant help${line.separator}
+for further information.${line.separator}
+"/>
     </target>
 </project>

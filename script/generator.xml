@@ -1,0 +1,9 @@
+<project name="generator" default="help" basedir=".">
+    <target name="help">
+        <echo message="TODO" />
+    </target>
+
+    <target name="generate-web-proj">
+        <echo message="TODO" />
+    </target>
+</project>

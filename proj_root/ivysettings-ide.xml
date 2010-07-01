@@ -1,0 +1,11 @@
+<ivysettings>
+    <settings defaultResolver="chain"/>
+    <resolvers>
+        <chain name="chain" returnFirst="true" >
+            <!-- This file is supposed to be used from an IDE, so it does not contain the local repo resolver.
+            The dependent projects should be added to as project dependencies, if necessary -->
+            -->
+            <ibiblio name="public_repo" m2compatible="true"/>
+        </chain>
+    </resolvers>
+</ivysettings>

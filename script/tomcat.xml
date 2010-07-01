@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="tomcat" default="init-script" basedir=".">
+    <dirname property="tomcat.root.dir" file="${ant.file.tomcat}"/>
+    <property name="root.dir" value="${tomcat.root.dir}/.."/>
+    <property file="${root.dir}/tomcat.properties"/>
+
+    <property name="dist.dir" value="${dist.dir}"/>
+
+    <target name="tomcat-init" depends="init-script">
+        <check-prop propname="tomcat.server"/>
+        <check-prop propname="tomcat.manager.url"/>
+        <check-prop propname="tomcat.username"/>
+        <check-prop propname="tomcat.password"/>
+
+        <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="script.classpath"/>
+        <taskdef name="list" classname="org.apache.catalina.ant.ListTask" classpathref="script.classpath"/>
+        <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="script.classpath"/>
+        <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask" classpathref="script.classpath"/>
+        <taskdef name="roles" classname="org.apache.catalina.ant.RolesTask" classpathref="script.classpath"/>
+        <taskdef name="start" classname="org.apache.catalina.ant.StartTask" classpathref="script.classpath"/>
+        <taskdef name="stop" classname="org.apache.catalina.ant.StopTask" classpathref="script.classpath"/>
+        <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="script.classpath"/>
+
+
+    </target>
+
+    <property name="tomcat.install.dir" value="${target.dir}/apache-tomcat-6.0.26"/>
+    <available file="${tomcat.install.dir}/bin" property="tomcat.installed"/>
+
+    <target name="-replace-tomcat-files" if="tomcat.conf.home" depends="init-ivy">
+        <!--<copydir src="${tomcat.conf.home}" dest="${tomcat.install.dir}"/>-->
+        <copy overwrite="true" todir="${tomcat.install.dir}">
+            <fileset dir="${tomcat.conf.home}"/>
+        </copy>
+        <ivy:retrieve pattern="${tomcat.install.dir}/lib/[artifact].[ext]" conf="nodeploy"/>
+
+    </target>
+
+    <target name="tomcat-install" unless="tomcat.installed">
+        <mkdir dir="${target.dir}"/>
+
+        <!--have to add a tomcat configuration to ivy.xml and a dependency:-->
+        <!--<dependency org="hu.astrid" name="apache-tomcat" rev="6.0.26" conf="tomcat->default"/>-->
+
+        <ivy:retrieve pattern="${target.dir}/tomcat.zip" conf="tomcat"/>
+        <unzip src="${target.dir}/tomcat.zip" dest="${target.dir}"/>
+        <copy file="${script.dir}/tomcat-users.xml" todir="${tomcat.install.dir}/conf" overwrite="true"/>
+        <antcall target="-replace-tomcat-files"/>
+        <delete file="${target.dir}/tomcat.zip"/>
+    </target>
+
+    <target name="tomcat-start" depends="tomcat-install">
+        <echo message="Starting tomcat..."/>
+        <java jar="${tomcat.install.dir}/bin/bootstrap.jar" fork="true">
+            <jvmarg value="-Dcatalina.home=${tomcat.install.dir}"/>
+            <jvmarg value="-Xmx512M"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
+            <jvmarg value="-XX:MaxPermSize=256M"/> 
+        </java>
+    </target>
+
+    <target name="tomcat-stop">
+        <java jar="${tomcat.install.dir}/bin/bootstrap.jar" fork="true">
+            <jvmarg value="-Dcatalina.home=${tomcat.install.dir}"/>
+            <arg line="stop"/>
+        </java>
+    </target>
+
+    <target name="tomcat-deploy-webapp" depends="build-war, tomcat-init">
+        <echo message="=> ${tomcat.manager.url} : /${ant.project.name} war=file:${dist.dir}/${ant.project.name}.war"/>
+        <deploy url="${tomcat.manager.url}"
+                username="${tomcat.username}"
+                password="${tomcat.password}"
+                path="/${ant.project.name}"
+                war="file:${dist.dir}/${ant.project.name}.war"/>
+    </target>
+
+    <target name="tomcat-reload-webapp" description="-> Reload application in Tomcat"
+            depends="tomcat-undeploy-webapp, tomcat-deploy-webapp">
+    </target>
+
+    <target name="tomcat-start-webapp" depends="tomcat-init">
+
+        <start url="${tomcat.manager.url}"
+               username="${tomcat.username}"
+               password="${tomcat.password}"
+               path="/${ant.project.name}"/>
+    </target>
+
+
+    <target name="tomcat-undeploy-webapp" depends="tomcat-init">
+
+        <undeploy url="${tomcat.manager.url}"
+                  username="${tomcat.username}"
+                  password="${tomcat.password}"
+                  path="/${ant.project.name}" failonerror="false"/>
+    </target>
+
+    <target name="tomcat-stop-webapp" depends="tomcat-init">
+
+        <stop url="${tomcat.manager.url}"
+              username="${tomcat.username}"
+              password="${tomcat.password}"
+              path="/${ant.project.name}"/>
+    </target>
+
+    <target name="tomcat-list-webapp" depends="tomcat-init">
+
+        <list url="${tomcat.manager.url}"
+              username="${tomcat.username}"
+              password="${tomcat.password}"/>
+    </target>
+
+    <target name="sync-resources">
+        <waitfor maxwait="10000" checkevery="1000" timeoutproperty="application.start.timeout">
+            <!--TODO: change url to variable-->
+            <http url="http://localhost:38080/${ant.project.name}"/>
+        </waitfor>
+        <fail if="application.start.timeout" message="APPLICATION NOT DEPLOYED"/>
+
+        <copy todir="${tomcat.install.dir}/webapps/${ant.project.name}" includeEmptyDirs="true" verbose="true"
+              preservelastmodified="true">
+            <fileset dir="${web.dir}"/>
+        </copy>
+    </target>
+
+    <target name="sync-classes" depends="compile">
+
+        <!--context.xml has an Context tag which have to set up with reloadable="true"-->
+
+        <waitfor maxwait="10000" checkevery="1000" timeoutproperty="application.start.timeout">
+            <!--TODO: change url to variable-->
+            <http url="http://localhost:38080/${ant.project.name}"/>
+        </waitfor>
+        <fail if="application.start.timeout" message="APPLICATION NOT DEPLOYED"/>
+
+        <copy todir="${tomcat.install.dir}/webapps/${ant.project.name}/WEB-INF/classes" includeEmptyDirs="true"
+              verbose="true"
+              preservelastmodified="true">
+            <fileset dir="${compile.dir}"/>
+        </copy>
+    </target>
+
+    <target name="sync-all" depends="sync-classes, sync-resources"/>
+</project>

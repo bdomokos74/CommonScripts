@@ -1,0 +1,71 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="rootproj"
+         default="build" basedir=".">
+
+    <!-- TODO change PROJNAME in both places -->
+    <dirname property="root.dir" file="${ant.file.rootproj}"/>
+    <property name="script.dir" value="${root.dir}/script"/>
+
+    <property file="${user.home}/.build.local.properties"/>
+    <property file="${root.dir}/build.properties"/>
+
+    <import file="${script.dir}/ivy-targets.xml"/>
+    <property name="target.dir" value="${root.dir}/target"/>
+    <mkdir dir="${root.dir}/target"/>
+    <import file="${script.dir}/script-setup.xml" optional="true"/>
+
+    <target name="clean" depends="init-ivy" description="-> Cleans all subprojects">
+        <delete dir="${target.dir}" failonerror="false"/>
+
+        <ivy:buildlist reference="build-path" onmissingdescriptor="skip">
+            <fileset dir="${root.dir}" includes="**/build.xml" excludes="build.xml"/>
+        </ivy:buildlist>
+
+        <subant failonerror="true" buildpathref="build-path" target="clean"/>
+    </target>
+
+    <target name="test" depends="init-ivy" description="-> Runs the unit tests in all of the subprojects">
+        <delete dir="${ivy.local.default.dir}"/>
+        <mkdir dir="${ivy.local.default.dir}"/>
+
+        <ivy:buildlist reference="build-path" onmissingdescriptor="skip">
+            <fileset dir="${root.dir}" includes="**/build.xml" excludes="build.xml"/>
+        </ivy:buildlist>
+
+        <echo message="buildlist=${toString:build-path}"/>
+        <subant failonerror="true" buildpathref="build-path" target="publish-if-tests-ok">
+            <property name="ivy.local.default.dir" value="${ivy.local.default.dir}"/>
+        </subant>
+    </target>
+
+    <target name="build" depends="init-ivy" description="-> Builds all the aftifacts of the subprojects">
+        <ivy:buildlist reference="build-path" onmissingdescriptor="skip">
+            <fileset dir="${root.dir}" includes="**/build.xml" excludes="build.xml"/>
+        </ivy:buildlist>
+
+        <subant failonerror="true" buildpathref="build-path" target="publish-if-build-ok">
+            <property name="ivy.local.default.dir" value="${ivy.local.default.dir}"/>
+        </subant>
+    </target>
+
+    <target name="component-test" depends="init-ivy" description="-> Runs the component tests of all the subprojects">
+        <delete dir="${ivy.local.default.dir}"/>
+        <mkdir dir="${ivy.local.default.dir}"/>
+
+        <ivy:buildlist reference="build-path" onmissingdescriptor="skip">
+            <fileset dir="${root.dir}" includes="**/build.xml" excludes="build.xml"/>
+        </ivy:buildlist>
+
+        <echo message="buildlist=${toString:build-path}"/>
+        <subant failonerror="true" buildpathref="build-path" target="component-test">
+            <property name="ivy.local.default.dir" value="${ivy.local.default.dir}"/>
+        </subant>
+    </target>
+
+    <target name="integration-test">
+        <echo message="Not implemented. You should implement it if needed..."/>
+    </target>
+
+    <target name="system-test">
+        <echo message="Not implemented. You should implement it if needed..."/>
+    </target>
+</project>

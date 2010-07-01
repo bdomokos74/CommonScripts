@@ -1,0 +1,75 @@
+<project name="ivy-targets" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <dirname property="ivy-targets.root.dir" file="${ant.file.ivy-targets}"/>
+    <dirname property="ivy-targets-project.root.dir" file="${ivy-targets.root.dir}"/>
+
+    <!-- ivy properties -->
+    <property name="ivy.install.version" value="2.1.0"/>
+    <property name="ivy.home" value="${user.home}/.ant"/>
+    <property name="ivy.jar.dir" value="${ivy.home}/lib"/>
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy-${ivy.install.version}.jar"/>
+    <available file="${ivy.jar.file}" property="ivy.jar.found"/>
+
+    <property name="ivy.local.default.dir" value="${ivy-targets-project.root.dir}/../target/local-repo/" />
+    <property name="ivy.shared.default.root" value="..."/>
+    
+    <property environment="env"/>
+
+    <condition property="ivy.home" value="${env.IVY_HOME}">
+        <isset property="env.IVY_HOME"/>
+    </condition>
+
+    <!-- download ivy files -->
+    <target name="download-ivy" unless="ivy.jar.found">
+        <mkdir dir="${ivy.jar.dir}"/>
+        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+             dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+
+    <target name="init-ivy" depends="download-ivy">
+        <mkdir dir="${ivy.local.default.dir}" />
+        <makeurl file="${ivy.local.default.dir}" property="ivy.local.default.root" />
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+        </path>
+
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+        <property name="ivy.settings.file" value="${ivy-targets-project.root.dir}/ivysettings-local.xml"/>
+        <ivy:settings file="${ivy.settings.file}"/>
+    </target>
+
+    <target name="ivy-clean-cache" depends="init-ivy">
+        <ivy:cleancache/>
+    </target>
+
+    <target name="init-script" depends="init-ivy">
+        <path id="script.classpath"/>
+        <ivy:cachepath pathid="script.classpath" conf="script"/>
+    </target>
+
+    <target name="init-runtime" depends="init-ivy">
+        <path id="runtime.classpath"/>
+        <ivy:cachepath pathid="runtime.classpath" conf="runtime"/>
+    </target>
+
+    <target name="init-test" depends="init-ivy">
+        <mkdir dir="${test.compile.dir}"/>
+        <mkdir dir="${test.report.dir}"/>
+        <path id="test.compile.classpath"/>
+        <ivy:cachepath pathid="test.compile.classpath" conf="default, nodeploy, test"/>
+    </target>
+
+    <target name="init-compile" depends="init-ivy">
+        <mkdir dir="${compile.dir}"/>
+        <path id="compile.classpath"/>
+        <!-- just to avoid the red marks with syntax highlight -->
+        <ivy:cachepath pathid="compile.classpath" conf="default, nodeploy"/>
+
+    </target>
+
+     <target name="ivy-report" depends="init-ivy" >
+        <mkdir dir="${ivy.report.dir}"/>
+        <ivy:report xml="false" graph="true" todir="${ivy.report.dir}"/>
+    </target>
+</project>

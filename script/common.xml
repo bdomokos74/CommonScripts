@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="common" basedir=".">
+
+    <import file="${script.dir}/script-setup.xml"/>
+
+    <macrodef name="check-prop">
+        <attribute name="propname"/>
+        <sequential>
+            <fail unless="@{propname}"
+                  message="Property @{propname} must be set."/>
+        </sequential>
+    </macrodef>
+
+    <!-- common structure of the project -->
+
+    <dirname property="common.root.dir" file="${ant.file.common}"/>
+    <property name="root.dir" value="${common.root.dir}/.."/>
+
+    <property name="target.dir" value="${root.dir}/target"/>
+    <property name="dist.dir" value="${target.dir}/dist"/>
+
+    <property name="main.dir" location="${root.dir}/src/main"/>
+    <property name="src.dir" location="${main.dir}/java"/>
+    <property name="resources.dir" location="${main.dir}/resources"/>
+    <property name="compile.dir" value="${target.dir}/classes"/>
+
+    <property name="test.dir" location="${root.dir}/src/test"/>
+    <property name="test.src.dir" location="${test.dir}/java"/>
+    <property name="test.resources.dir" location="${test.dir}/resources"/>
+    <property name="test.compile.dir" value="${target.dir}/test-classes"/>
+
+    <property name="componenttest.compile.dir" value="${target.dir}/component-test-classes"/>
+    <property name="componenttest.src.dir" value="${root.dir}/src/component-test/java"/>
+    <property name="componenttest.resources.dir" value="${root.dir}/src/component-test/resources"/>
+    <property name="componenttest.report.dir" value="${target.dir}/reports/component-test"/>
+
+    <property name="javadoc.dir" value="${target.dir}/javadoc"/>
+
+    <!-- reports -->
+    <property name="ivy.report.dir" value="${target.dir}/reports/ivy-reports"/>
+    <property name="test.report.dir" value="${target.dir}/reports"/>
+
+    <import file="../ivy-targets.xml" />
+
+    <target name="-pre-init"/>
+    <target name="-post-init"/>
+
+    <target name="init" depends="init-script, init-compile, init-runtime, init-test">
+        <antcall target="-pre-init"/>
+        <!--<ivy:resolve/>-->
+
+        <antcall target="-post-init"/>
+    </target>
+
+    <target name="-pre-compile"/>
+    <target name="-post-compile"/>
+
+    <target name="compile" depends="init-compile" description="-> Compile the sources of the project">
+
+        <antcall target="-pre-compile"/>
+
+        <javac srcdir="${src.dir}" includes="**/*.java" encoding="utf-8"
+               destdir="${compile.dir}"
+               debug="true">
+            <classpath>
+                <path refid="compile.classpath"/>
+            </classpath>
+        </javac>
+
+        <antcall target="-post-compile"/>
+
+    </target>
+
+    <target name="-pre-test-compile"/>
+    <target name="-post-test-compile"/>
+
+    <target name="test-compile" depends="init-test,compile" description="-> Compile the tests of the project">
+
+        <antcall target="-pre-test-compile"/>
+
+        <javac srcdir="${test.src.dir}" includes="**/*.java" encoding="utf-8"
+               destdir="${test.compile.dir}"
+               debug="true">
+            <classpath>
+                <path refid="test.compile.classpath"/>
+                <pathelement location="${compile.dir}"/>
+            </classpath>
+        </javac>
+
+        <antcall target="-post-test-compile"/>
+
+    </target>
+
+    <target name="-pre-test"/>
+    <target name="-post-test"/>
+
+    <property name="test.jvmargs" value="-Ddummy=dummyval" />
+    <target name="test" depends="test-compile" description="-> Runs the JUnit tests">
+
+        <antcall target="-pre-test"/>
+
+        <junit printsummary="yes" errorproperty="test.failed" failureproperty="test.failed">
+            <formatter type="xml"/>
+            <classpath>
+                <pathelement location="${test.compile.dir}"/>
+                <pathelement location="${test.resources.dir}"/>
+                <pathelement location="${compile.dir}"/>
+                <pathelement location="${resources.dir}"/>
+                <path refid="compile.classpath"/>
+                <path refid="test.compile.classpath"/>
+            </classpath>
+            <jvmarg line="${test.jvmargs}" />
+            <batchtest fork="yes" todir="${test.report.dir}">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${test.report.dir}">
+            <fileset dir="${test.report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.report.dir}/html"/>
+        </junitreport>
+
+        <fail if="test.failed">
+            Tests failed. Check ${test.report.dir}.
+        </fail>
+
+        <antcall target="-post-test"/>
+    </target>
+
+
+    <target name="component-test-compile-java" depends="component-test-init, compile">
+        <javac srcdir="${componenttest.src.dir}" includes="**/*.java" encoding="utf-8"
+               destdir="${componenttest.compile.dir}"
+               debug="true">
+            <classpath>
+                <path refid="compile.classpath"/>
+                <path refid="test.compile.classpath"/>
+                <pathelement location="${compile.dir}"/>
+                <pathelement location="${resources.dir}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="component-test-init" depends="init">
+
+        <mkdir dir="${componenttest.compile.dir}"/>
+
+    </target>
+
+    <target name="component-test-compile" depends="component-test-init, component-test-compile-java">
+
+    </target>
+
+    <target name="run-component-test" depends="run-component-test-nofail">
+        <fail if="component.tests.failed">
+            System tests failed, check ${test.report.dir}.
+        </fail>
+    </target>
+
+    <target name="run-component-test-nofail" depends="component-test-init, component-test-compile">
+
+        <echo message="Running component tests..."/>
+
+        <mkdir dir="${componenttest.report.dir}"/>
+
+        <junit printsummary="yes" failureproperty="component.tests.failed" errorproperty="component.tests.failed">
+            <formatter type="xml"/>
+            <classpath>
+                <pathelement location="${compile.dir}"/>
+                <pathelement location="${resources.dir}"/>
+                <pathelement location="${componenttest.compile.dir}"/>
+                <pathelement location="${componenttest.resources.dir}"/>
+                <path refid="compile.classpath"/>
+                <path refid="runtime.classpath"/>
+                <path refid="test.compile.classpath"/>
+            </classpath>
+            <jvmarg line="${test.jvmargs}" />
+            <batchtest fork="yes" todir="${componenttest.report.dir}">
+                <fileset dir="${componenttest.compile.dir}">
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${componenttest.report.dir}">
+            <fileset dir="${componenttest.report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${componenttest.report.dir}/html"/>
+        </junitreport>
+
+    </target>
+
+    <target name="showproperties" depends="init" description="-> Descripbes the properties">
+        <echoproperties/>
+    </target>
+
+    <target name="clean" description="-> Clean the generated files">
+        <delete dir="${target.dir}" failonerror="false"/>
+    </target>
+
+    <target name="javadoc" depends="init" description="-> Generate javadoc">
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" classpathref="compile.classpath"/>
+    </target>
+
+    <target name="javadoc-zip" depends="javadoc" description="-> Generate javadoc in zip archive">
+        <zip destfile="${target.dir}/javadoc.zip" basedir="${target.dir}/javadoc"/>
+    </target>
+
+    <property file="${common.root.dir}/build.properties"/>
+    <property name="common.script.dir" value="${common.root.dir}"/>
+    
+    <import file="${common.script.dir}/script-setup.xml" />
+
+    <target  name="-publish-message">
+        <info-message target.name="publish-if-tests-ok"/>
+    </target>
+
+    <target  name="-component-test-message">
+        <info-message target.name="componetnt tests"/>
+    </target>
+
+    <target  name="-build-test-message">
+        <info-message target.name="build"/>
+    </target>
+
+    <macrodef name="info-message">
+        <attribute name="target.name"/>
+        <sequential>
+            <echo message="${line.separator}###${line.separator}
+### Running @{target.name} for ${ant.project.name}${line.separator}
+###${line.separator}"/>
+        </sequential>
+    </macrodef>
+
+    <target name="publish-if-tests-ok" depends="-publish-message, test, publish-local"/>
+    <target name="publish-if-build-ok" depends="-build-test-message, build, publish-local" />
+    <target name="publish-if-component-tests-ok" depends="-component-test-message, component-test, publish-local"/>
+
+</project>

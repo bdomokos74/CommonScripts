@@ -1,0 +1,35 @@
+<project name="script-setup" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <macrodef name="check-script">
+        <attribute name="scriptname"/>
+        <sequential>
+            <get src="${script.svn.url}/@{scriptname}" dest="${target.dir}/tmp/@{scriptname}"/>
+            <checksum file="${target.dir}/tmp/@{scriptname}" property="@{scriptname}.checksum"/>
+            <checksum file="${script.dir}/@{scriptname}" property="${@{scriptname}.checksum}"
+                      verifyproperty="@{scriptname}.checksum.match"/>
+            <fail message="@{scriptname} is out of date, run the download-scripts target and commit the new scripts.">
+                <condition>
+                    <not>
+                        <istrue value="${@{scriptname}.checksum.match}"/>
+                    </not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <target name="check-scripts" description="-> Check the latest script version has been downloaded">
+        <mkdir dir="${target.dir}/tmp"/>
+
+        <check-script scriptname="common-analyze.xml"/>
+        <check-script scriptname="common-lib.xml"/>
+        <check-script scriptname="common-standalone.xml"/>
+        <check-script scriptname="common-web.xml"/>
+        <check-script scriptname="common.xml"/>
+        <check-script scriptname="hsqldb.xml"/>
+        <check-script scriptname="jetty.xml"/>
+        <check-script scriptname="script-setup.xml"/>
+        <check-script scriptname="tomcat-users.xml"/>
+        <check-script scriptname="tomcat.xml"/>
+
+        <delete dir="${target.dir}/tmp"/>
+    </target>
+</project>

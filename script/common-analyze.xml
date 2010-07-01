@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project name="common-findbugs" basedir=".">
+
+    <!-- requirement -->
+    <!-- the FINDBUGS_HOME must be set -->
+    <property name="target.dir" value="${target.dir}"/>
+    <property name="src.dir" value="${src.dir}"/>
+    <property name="dist.dir" value="${dist.dir}"/>
+
+    <property name="findbugs.jvmargs"
+              value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${env.FINDBUGS_HOME}"/>
+    <property name="findbugs.report.dir" value="${target.dir}/reports/findbugs"/>
+
+    <target name="analyze" depends="build-jar"
+            description="-> Runs FindBugs tool on the code of the project, FINDBUGS_HOME environment variable must be set">
+
+        <mkdir dir="${findbugs.report.dir}"/>
+
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+            <classpath>
+                <fileset dir="${env.FINDBUGS_HOME}/lib/"/>
+            </classpath>
+        </taskdef>
+
+        <findbugs home="${env.FINDBUGS_HOME}"
+                  output="xml:withMessages"
+                  timeout="90000000"
+                  reportLevel="experimental"
+                  workHard="true"
+                  effort="max"
+                  adjustExperimental="true"
+                  jvmargs="${findbugs.jvmargs}"
+                  failOnError="true"
+                  outputFile="${findbugs.report.dir}/analyze.xml"
+                  projectName="Findbugs"
+                  debug="true">
+            <sourcePath path="${src.dir}"/>
+            <class location="${dist.dir}/${ant.project.name}.jar"/>
+        </findbugs>
+    </target>
+
+    <!-- PMD static code analysis-->
+    <target name="pmd" depends="init-script">
+        <mkdir dir="${target.dir}/pmd"/>
+        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+            <classpath>
+                <path refid="script.classpath"/>
+            </classpath>
+        </taskdef>
+        <pmd rulesetfiles="imports,unusedcode,basic,design">
+            <formatter type="html" toFile="${target.dir}/pmd/pmd_report.html"/>
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+        </pmd>
+    </target>
+
+    <!-- Copy paste detector -->
+    <target name="cpd" depends="init-script">
+        <mkdir dir="${target.dir}/pmd"/>
+        <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask">
+            <classpath>
+                <path refid="script.classpath"/>
+            </classpath>
+        </taskdef>
+        <cpd minimumTokenCount="100" outputFile="${target.dir}/pmd/cpd_report.txt">
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+        </cpd>
+    </target>
+</project>

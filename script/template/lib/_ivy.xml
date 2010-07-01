@@ -1,0 +1,16 @@
+<ivy-module version="2.0">
+    <!-- TODO : change PROJNAME to the name of this module, and the revision. -->
+    <info organisation="hu.astrid" module="PROJNAME" revision="2.0.0"/>
+    <configurations>
+        <conf name="nodeploy"/>
+        <conf name="default"/>
+        <conf name="runtime"/>
+        <conf name="test"/>
+        <conf name="script"/>
+    </configurations>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.6" conf="test->default"/>
+        <dependency org="org.easymock" name="easymock" rev="2.5.2" conf="test->default"/>
+        <dependency org="org.easymock" name="easymockclassextension" rev="2.4" conf="test->default"/>
+    </dependencies>
+</ivy-module>

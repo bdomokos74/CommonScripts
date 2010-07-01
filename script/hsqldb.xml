@@ -1,0 +1,73 @@
+<project name="hsqltargets">
+
+
+    <target name="db-start" depends="init-runtime" description="-> Run HSQL database server with clean DB">
+        <!-- Delete database files -->
+        <delete dir="${database.dir}"/>
+        <java classname="org.hsqldb.Server"
+              fork="yes"
+              failonerror="true">
+            <arg value="-database.0"/>
+            <arg value="file:${database.dir}/db"/>
+            <classpath>
+                <path refid="runtime.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="db-stop" depends="init-runtime" description="-> Stop the HSQL DB database server">
+        <sql
+                classpathref="runtime.classpath"
+                driver="org.hsqldb.jdbcDriver"
+                url="jdbc:hsqldb:hsql://localhost"
+                userid="sa" password=""
+                autocommit="true">SHUTDOWN
+        </sql>
+    </target>
+
+    <target name="schemaspy" depends="init-ivy, init-script">
+        <parallel>
+            <sequential>
+                <antcall target="db-start"/>
+            </sequential>
+            <sequential>
+                <waitfor maxwait="10000" checkevery="1000" timeoutproperty="db.start.timeout">
+                    <socket server="127.0.0.1" port="9001"/>
+                </waitfor>
+                <antcall target="system-test-nofail"/>
+                <property name="schemaspy.dir" value="${target.dir}/schemaspy"/>
+                <property name="schemaspy.db" value="''"/>
+                <mkdir dir="${schemaspy.dir}"/>
+                <java classname="net.sourceforge.schemaspy.Main" fork="true">
+                    <classpath>
+                        <path refid="script.classpath"/>
+                    </classpath>
+                    <arg line="-t hsqldb"/>
+                    <arg line="-db ${schemaspy.db}"/>
+                    <arg line="-host localhost"/>
+                    <arg line="-port 9001"/>
+                    <arg line="-u sa"/>
+                    <arg line="-s PUBLIC"/>
+                    <arg line="-o ${schemaspy.dir}"/>
+                </java>
+                <antcall target="db-stop"/>
+                <zip destfile="${target.dir}/schemaspy.zip" basedir="${schemaspy.dir}"/>
+            </sequential>
+        </parallel>
+    </target>
+
+     <target name="db-manager" depends="init"
+            description="-> Run GUI application which connected the current runing database">
+        <java
+                classname="org.hsqldb.util.DatabaseManagerSwing"
+                fork="yes"
+                classpathref="script.classpath"
+                failonerror="true">
+            <arg value="-url"/>
+            <arg value="jdbc:hsqldb:hsql://localhost/"/>
+            <arg value="-driver"/>
+            <arg value="org.hsqldb.jdbcDriver"/>
+        </java>
+    </target>
+
+</project>

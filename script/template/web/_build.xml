@@ -8,8 +8,7 @@
     <property file="${user.home}/.build.local.properties" />
     <property file="${projects.root.dir}/build.properties" />
 
-    <!-- TODO : change the following import, according to the project type -->
-    <import file="${script.dir}/common-lib.xml" optional="true"/>
+    <import file="${script.dir}/common-web.xml" optional="true"/>
     <import file="${script.dir}/common-analyze.xml" optional="true"/>
 
     <import file="${root.dir}/custom.xml" optional="true"/>

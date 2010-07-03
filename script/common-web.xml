@@ -18,6 +18,7 @@
 
         <war destfile="${dist.dir}/${ant.project.name}.war">
             <classes dir="${compile.dir}"/>
+            <classes dir="${resources.dir}"/>
             <fileset dir="${web.dir}"/>
             <lib dir="${lib.dir}"/>
         </war>

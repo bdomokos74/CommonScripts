@@ -1,0 +1,5 @@
+<project name="custom">
+    <target name="component-test" depends="run-component-test" description="Runs the component tests of the project">
+        <echo message="Component test not implemented..." />
+    </target>
+</project>

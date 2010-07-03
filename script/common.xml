@@ -2,14 +2,7 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="common" basedir=".">
 
     <import file="${script.dir}/script-setup.xml"/>
-
-    <macrodef name="check-prop">
-        <attribute name="propname"/>
-        <sequential>
-            <fail unless="@{propname}"
-                  message="Property @{propname} must be set."/>
-        </sequential>
-    </macrodef>
+    <import file="${script.dir}/util.xml"/>
 
     <!-- common structure of the project -->
 

@@ -1,9 +1,35 @@
 <project name="generator" default="help" basedir=".">
+
+    <import file="${script.dir}/util.xml"/>
+
     <target name="help">
-        <echo message="TODO" />
+        <echo message="TODO"/>
     </target>
 
-    <target name="generate-web-proj">
-        <echo message="TODO" />
+    <target name="generate-web-module">
+        <check-prop propname="module.name"/>
+        <property name="module.name" value="dummy"/>
+        <mkdir dir="${module.name}/src/main/java"/>
+        <mkdir dir="${module.name}/src/main/resources"/>
+        <mkdir dir="${module.name}/src/main/webapp"/>
+        <mkdir dir="${module.name}/src/test/java"/>
+        <mkdir dir="${module.name}/src/test/resources"/>
+        <mkdir dir="${module.name}/src/component-test/java"/>
+        <mkdir dir="${module.name}/src/component-test/resources"/>
+
+        <filterset id="moduleNameFilter">
+            <filter token="MODNAME" value="${module.name}"/>
+        </filterset>
+
+        <copy file="${script.dir}/template/web/custom.xml" todir="${module.name}"/>
+        <copy todir="${module.name}">
+            <fileset dir="${script.dir}/template/web/**">
+                <include name="*"/>
+            </fileset>
+            <filtermapper>
+                <replacestring from="_" to=""/>
+            </filtermapper>
+            <filterset refid="moduleNameFilter"/>
+        </copy>
     </target>
 </project>

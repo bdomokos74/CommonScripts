@@ -1,0 +1,11 @@
+<project name="util">
+    
+    <macrodef name="check-prop">
+        <attribute name="propname"/>
+        <sequential>
+            <fail unless="@{propname}"
+                  message="Property @{propname} must be set."/>
+        </sequential>
+    </macrodef>
+
+</project>

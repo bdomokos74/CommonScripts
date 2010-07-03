@@ -11,8 +11,7 @@
                      root="${ivy.shared.default.root}"/>
             -->
 
-            <ibiblio name="public_repo" m2compatible="true"
-                     root="${ivy.public.default.root}"/>
+            <ibiblio name="public_repo" m2compatible="true"/>
         </chain>
     </resolvers>
 </ivysettings>

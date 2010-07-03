@@ -1,6 +1,5 @@
 <ivy-module version="2.0">
-    <!-- TODO : change PROJNAME to the name of this module, and the revision. -->
-    <info organisation="hu.astrid" module="PROJNAME" revision="2.0.0"/>
+    <info organisation="hu.astrid" module="@MODNAME@" revision="1.0.0"/>
     <configurations>
         <conf name="nodeploy"/>
         <conf name="default"/>

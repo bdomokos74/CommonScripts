@@ -4,7 +4,7 @@
     <property name="target.dir" value="${root.dir}/target"/>
     <property name="temp.dir" value="${target.dir}/temp"/>
 
-    <property name="repo.url" value="http://github.com/astrid/CommonScripts/blob/master"/>
+    <property name="repo.url" value="http://github.com/astrid/CommonScripts/raw/master"/>
     <property name="script.url" value="${repo.url}/script"/>
     <property name="proj_root.url" value="${repo.url}/proj_root"/>
     <property name="script.lib.url" value="${script.url}/template/lib"/>
@@ -22,22 +22,28 @@
         <get src="${script.url}/common-standalone.xml" dest="${script.dir}/common-standalone.xml"/>
         <get src="${script.url}/common-web.xml" dest="${script.dir}/common-web.xml"/>
         <get src="${script.url}/common.xml" dest="${script.dir}/common.xml"/>
+        <get src="${script.url}/generator.xml" dest="${script.dir}/generator.xml"/>
         <get src="${script.url}/hsqldb.xml" dest="${script.dir}/hsqldb.xml"/>
         <get src="${script.url}/ivy-targets.xml" dest="${script.dir}/ivy-targets.xml"/>
         <get src="${script.url}/script-setup.xml" dest="${script.dir}/script-setup.xml"/>
         <get src="${script.url}/tomcat-users.xml" dest="${script.dir}/tomcat-users.xml"/>
         <get src="${script.url}/tomcat.xml" dest="${script.dir}/tomcat.xml"/>
+        <get src="${script.url}/util.xml" dest="${script.dir}/util.xml"/>
 
         <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/lib/_build.xml"/>
         <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/lib/_ivy.xml"/>
         <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/lib/custom.xml"/>
 
+        <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/web/_build.xml"/>
+        <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/web/_ivy.xml"/>
+        <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/web/custom.xml"/>
+
         <mkdir dir="${script.dir}/template/web"/>
         <mkdir dir="${script.dir}/template/standalone"/>
 
         <echo message="${line.separator}
-You can start by running:${line.separator}            ant generate-web-proj -Dproj.name=PROJNAME${line.separator}
-to set up a web project skeleton. Type${line.separator}            ant help${line.separator}
+You can start by running:${line.separator}            ant generate-web-module -module.name=PROJNAME${line.separator}
+to set up a web module skeleton. Type${line.separator}            ant help${line.separator}
 for further information.${line.separator}
 "/>
     </target>

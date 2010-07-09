@@ -55,8 +55,7 @@
         <delete file="${dist.dir}/pom.xml"/>
     </target>
     
-    <target name="publish-local" depends="build-jar, init-script"
-            description="-> Publishes the artifact of this project to the local repo.">
+    <target name="publish-local" depends="build-jar, init-script">
         <check-prop propname="ivy.local.default.root"/>
 
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
@@ -76,9 +75,7 @@
     </target>
 
 
-    <target name="publish-snapshot" depends="build-jar"
-            description="-> Publishes the snapshot version of this project to the local repo.">
-
+    <target name="publish-snapshot" depends="build-jar">
         <check-prop propname="local.repo.url"/>
 
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"

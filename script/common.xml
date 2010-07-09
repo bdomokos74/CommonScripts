@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="common" basedir=".">
 
-    <import file="${script.dir}/script-setup.xml"/>
-    <import file="${script.dir}/util.xml"/>
+    <macrodef name="check-prop">
+        <attribute name="propname"/>
+        <sequential>
+            <fail unless="@{propname}"
+                  message="Property @{propname} must be set."/>
+        </sequential>
+    </macrodef>
 
     <!-- common structure of the project -->
 
@@ -33,7 +38,7 @@
     <property name="ivy.report.dir" value="${target.dir}/reports/ivy-reports"/>
     <property name="test.report.dir" value="${target.dir}/reports"/>
 
-    <import file="../ivy-targets.xml" />
+    <import file="ivy-targets.xml" />
 
     <target name="-pre-init"/>
     <target name="-post-init"/>
@@ -188,7 +193,7 @@
 
     </target>
 
-    <target name="showproperties" depends="init" description="-> Descripbes the properties">
+    <target name="showproperties" depends="init">
         <echoproperties/>
     </target>
 

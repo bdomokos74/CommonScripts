@@ -1,0 +1,82 @@
+<project name="jetty">
+
+    <target name="jetty-init" depends="init" description="-> Init the Jetty WebServer">
+        <taskdef resource="tasks.properties" loaderref="jetty.loader">
+            <classpath>
+                <path refid="script.classpath"/>
+                <path refid="runtime.classpath"/>
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="jetty-start" depends="jetty-init, build-war" description="-> Start the Jetty WebServer">
+        <mkdir dir="${target.dir}/temp"/>
+        <echo message="ant.project.name = ${ant.project.name}" />
+        <jetty tempDirectory="${target.dir}/temp" >
+            <webApp name="${ant.project.name}" warfile="${target.dir}/dist/${ant.project.name}.war" contextpath="/${ant.project.name}"/>
+        </jetty>
+    </target>
+
+    <!-- TODO review if these are still needed, coming from AppUI/custom.xml -->
+
+     <target name="-jetty.init" depends="build-war">
+        <copy todir="${target.dir}">
+            <fileset dir="${root.dir}/jettyhome"/>
+        </copy>
+        <mkdir dir="${target.dir}/logs"/>
+        <mkdir dir="${target.dir}/contexts"/>
+    </target>
+
+    <target name="-if.jetty.stop" unless="jetty.port.used">
+        <antcall target="-jetty.stop"/>
+    </target>
+
+    <target name="-jetty.start" depends="-jetty.init, build-war">
+
+        <waitfor maxwait="1000" checkevery="100" timeoutproperty="jetty.port.used">
+            <socket server="127.0.0.1" port="${web.app.shutdown.port}"/>
+        </waitfor>
+
+        <antcall target="-if.jetty.stop"/>
+
+        <waitfor maxwait="1000" checkevery="100" timeoutproperty="jetty.port.sec.used">
+            <socket server="127.0.0.1" port="${web.app.shutdown.port}"/>
+        </waitfor>
+
+        <fail unless="jetty.port.sec.used" message="Could not stop jetty"/>
+
+        <java classname="org.mortbay.start.Main" fork="true" dir="${target.dir}">
+
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+            <jvmarg value="-DSTOP.PORT=${web.app.shutdown.port}"/>
+            <jvmarg value="-DSTOP.KEY=secret"/>
+            <jvmarg value="-Djetty.port=${web.app.port}"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
+
+            <classpath>
+                <path refid="script.classpath"/>
+            </classpath>
+        </java>
+
+    </target>
+
+    <target name="-jetty.stop" depends="init">
+
+        <java classname="org.mortbay.start.Main" fork="true" dir="${target.dir}">
+
+            <jvmarg value="-DSTOP.PORT=${web.app.shutdown.port}"/>
+            <jvmarg value="-DSTOP.KEY=secret"/>
+            <arg value="--stop"/>
+
+            <classpath>
+                <path refid="script.classpath"/>
+                <path refid="runtime.classpath"/>
+            </classpath>
+
+        </java>
+
+        <sleep seconds="2"/>
+    </target>
+
+</project>

@@ -1,4 +1,4 @@
-<project name="init.proj" default="init" basedir=".">
+<project name="init.proj" default="help" basedir=".">
     <dirname property="root.dir" file="${ant.file.init.proj}"/>
     <property name="script.dir" value="${root.dir}/script"/>
     <property name="target.dir" value="${root.dir}/target"/>
@@ -8,6 +8,12 @@
     <property name="script.url" value="${repo.url}/script"/>
     <property name="proj_root.url" value="${repo.url}/proj_root"/>
     <property name="script.lib.url" value="${script.url}/template/lib"/>
+
+    <target name="help">
+        <echo message="${line.separator}This script can be used to download the scripts when starting a new project,${line.separator}
+or update the scripts to the latest. Usage:${line.separator}
+ant -f init.xml init${line.separator} "/>
+    </target>
 
     <target name="init" description="-> Downloads the common scripts.">
         <get src="${proj_root.url}/build.properties" dest="${root.dir}/build.properties"/>

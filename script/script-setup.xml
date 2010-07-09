@@ -25,6 +25,7 @@
         <check-script scriptname="common-web.xml"/>
         <check-script scriptname="common.xml"/>
         <check-script scriptname="hsqldb.xml"/>
+        <check-script scriptname="ivy-targets.xml"/>
         <check-script scriptname="jetty.xml"/>
         <check-script scriptname="script-setup.xml"/>
         <check-script scriptname="tomcat-users.xml"/>

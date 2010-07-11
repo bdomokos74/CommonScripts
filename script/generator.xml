@@ -21,11 +21,13 @@
             <filter token="MODNAME" value="${module.name}"/>
         </filterset>
 
-        <copy file="${script.dir}/template/web/custom.xml" todir="${module.name}"/>
+        <!--<copy file="${script.dir}/template/web/custom.xml" todir="${module.name}"/>-->
+
         <copy todir="${module.name}">
-            <fileset dir="${script.dir}/template/web/**">
-                <include name="*"/>
+            <fileset dir="${script.dir}/template/web">
+                <include name="**/*.*" />
             </fileset>
+
             <filtermapper>
                 <replacestring from="_" to=""/>
             </filtermapper>

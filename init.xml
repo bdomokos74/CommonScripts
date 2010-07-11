@@ -1,6 +1,9 @@
 <project name="init.proj" default="help" basedir=".">
     <dirname property="root.dir" file="${ant.file.init.proj}"/>
     <property name="script.dir" value="${root.dir}/script"/>
+    <property name="template.lib.dir" value="${script.dir}/template/lib"/>
+    <property name="template.web.dir" value="${script.dir}/template/web"/>
+    <property name="template.standalone.dir" value="${script.dir}/template/standalone"/>
     <property name="target.dir" value="${root.dir}/target"/>
     <property name="temp.dir" value="${target.dir}/temp"/>
 
@@ -8,6 +11,7 @@
     <property name="script.url" value="${repo.url}/script"/>
     <property name="proj_root.url" value="${repo.url}/proj_root"/>
     <property name="script.lib.url" value="${script.url}/template/lib"/>
+    <property name="script.web.url" value="${script.url}/template/web"/>
 
     <target name="help">
         <echo message="${line.separator}This script can be used to download the scripts when starting a new project,${line.separator}
@@ -22,7 +26,7 @@ ant -f init.xml init${line.separator} "/>
         <get src="${proj_root.url}/ivysettings-ide.xml" dest="${root.dir}/ivysettings-ide.xml"/>
         <get src="${proj_root.url}/ivysettings-local.xml" dest="${root.dir}/ivysettings-local.xml"/>
 
-        <mkdir dir="${script.dir}/template/lib"/>
+        <mkdir dir="${script.dir}"/>
         <get src="${script.url}/common-analyze.xml" dest="${script.dir}/common-analyze.xml"/>
         <get src="${script.url}/common-lib.xml" dest="${script.dir}/common-lib.xml"/>
         <get src="${script.url}/common-standalone.xml" dest="${script.dir}/common-standalone.xml"/>
@@ -36,16 +40,19 @@ ant -f init.xml init${line.separator} "/>
         <get src="${script.url}/tomcat.xml" dest="${script.dir}/tomcat.xml"/>
         <get src="${script.url}/util.xml" dest="${script.dir}/util.xml"/>
 
-        <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/lib/_build.xml"/>
-        <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/lib/_ivy.xml"/>
-        <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/lib/custom.xml"/>
+        <mkdir dir="${template.lib.dir}"/>
+        <get src="${script.lib.url}/_build.xml" dest="${template.lib.dir}/_build.xml"/>
+        <get src="${script.lib.url}/_ivy.xml" dest="${template.lib.dir}/_ivy.xml"/>
+        <get src="${script.lib.url}/custom.xml" dest="${template.lib.dir}/custom.xml"/>
 
-        <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/web/_build.xml"/>
-        <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/web/_ivy.xml"/>
-        <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/web/custom.xml"/>
+        <mkdir dir="${template.web.dir}"/>
+        <get src="${script.web.url}/_build.xml" dest="${template.web.dir}/_build.xml"/>
+        <get src="${script.web.url}/_ivy.xml" dest="${template.web.dir}/_ivy.xml"/>
+        <get src="${script.web.url}/custom.xml" dest="${template.web.dir}/custom.xml"/>
+        <mkdir dir="${template.web.dir}/src/main/java/org/example" />
+        <get src="${script.web.url}/src/main/java/org/example/InitAction.java" dest="${template.web.dir}/src/main/java/org/example/InitAction.java"/>
 
-        <mkdir dir="${script.dir}/template/web"/>
-        <mkdir dir="${script.dir}/template/standalone"/>
+        <mkdir dir="${template.standalone.dir}"/>
 
         <echo message="${line.separator}
 You can start by running:${line.separator}            ant generate-web-module -module.name=PROJNAME${line.separator}

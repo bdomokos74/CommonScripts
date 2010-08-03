@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="common" basedir=".">
 
-    <macrodef name="check-prop">
-        <attribute name="propname"/>
-        <sequential>
-            <fail unless="@{propname}"
-                  message="Property @{propname} must be set."/>
-        </sequential>
-    </macrodef>
-
     <!-- common structure of the project -->
 
     <dirname property="common.root.dir" file="${ant.file.common}"/>
     <property name="root.dir" value="${common.root.dir}/.."/>
+    <import file="${common.root.dir}/util.xml" />
 
     <property name="target.dir" value="${root.dir}/target"/>
     <property name="dist.dir" value="${target.dir}/dist"/>

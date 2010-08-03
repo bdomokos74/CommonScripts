@@ -10,8 +10,8 @@
     <available file="${ivy.jar.file}" property="ivy.jar.found"/>
 
     <property name="ivy.local.default.dir" value="${ivy-targets-project.root.dir}/target/local-repo/" />
-    <property name="ivy.shared.default.root" value="TODO"/>
-    <property name="ivy.public.default.root" value="TODO"/>
+    <property name="ivy.public.default.root" value="http://192.168.2.4:8080/nexus/content/groups/public/" />
+    <property name="ivy.shared.default.root" value="http://192.168.2.4:8080/nexus/content/repositories/AstridRepo/"/>
     
     <property environment="env"/>
 

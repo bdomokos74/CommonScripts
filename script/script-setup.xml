@@ -1,15 +1,20 @@
 <project name="script-setup" xmlns:ivy="antlib:org.apache.ivy.ant">
     <macrodef name="check-script">
-        <attribute name="scriptname"/>
+        <attribute name="project-root-dir"/>
+        <attribute name="script-dir"/>
+        <attribute name="script-name"/>
         <sequential>
-            <get src="${script.svn.url}/@{scriptname}" dest="${target.dir}/tmp/@{scriptname}"/>
-            <checksum file="${target.dir}/tmp/@{scriptname}" property="@{scriptname}.checksum"/>
-            <checksum file="${script.dir}/@{scriptname}" property="${@{scriptname}.checksum}"
-                      verifyproperty="@{scriptname}.checksum.match"/>
-            <fail message="@{scriptname} is out of date, run the download-scripts target and commit the new scripts.">
+            <property name="download.dir" value="${target.dir}/tmp@{script-dir}"/>
+            <mkdir dir="${download.dir}" />
+            <property name="downloaded.script.@{script-name}" value="${download.dir}/@{script-name}"/>
+            <get src="${script.svn.url}@{script-dir}/@{script-name}" dest="${downloaded.script.@{script-name}}"/>
+            <checksum file="${downloaded.script.@{script-name}}" property="@{script-name}.checksum"/>
+            <checksum file="@{project-root-dir}@{script-dir}/@{script-name}" property="${@{script-name}.checksum}"
+                      verifyproperty="@{script-name}.checksum.match"/>
+            <fail message="@{script-name} is out of date, run the download-scripts target and commit the new scripts.">
                 <condition>
                     <not>
-                        <istrue value="${@{scriptname}.checksum.match}"/>
+                        <istrue value="${@{script-name}.checksum.match}"/>
                     </not>
                 </condition>
             </fail>
@@ -19,17 +24,19 @@
     <target name="check-scripts" description="-> Check the latest script version has been downloaded">
         <mkdir dir="${target.dir}/tmp"/>
 
-        <check-script scriptname="common-analyze.xml"/>
-        <check-script scriptname="common-lib.xml"/>
-        <check-script scriptname="common-standalone.xml"/>
-        <check-script scriptname="common-web.xml"/>
-        <check-script scriptname="common.xml"/>
-        <check-script scriptname="hsqldb.xml"/>
-        <check-script scriptname="ivy-targets.xml"/>
-        <check-script scriptname="jetty.xml"/>
-        <check-script scriptname="script-setup.xml"/>
-        <check-script scriptname="tomcat-users.xml"/>
-        <check-script scriptname="tomcat.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="common-analyze.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="common-lib.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="common-standalone.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="common-web.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="common.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="hsqldb.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="ivy-targets.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="jetty.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="script-setup.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="tomcat-users.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="tomcat.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/script" script-name="util.xml"/>
+        <check-script project-root-dir="${root.dir}" script-dir="/" script-name="init.xml"/>
 
         <delete dir="${target.dir}/tmp"/>
     </target>

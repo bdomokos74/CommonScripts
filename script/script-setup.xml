@@ -1,4 +1,7 @@
 <project name="script-setup" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- The script.root.url needs to be set for this project, e.g. in the main build.properties file.
+    - It should be an url pointing to the script repo in git.
+    -->
     <macrodef name="check-script">
         <attribute name="project-root-dir"/>
         <attribute name="script-dir"/>
@@ -7,7 +10,7 @@
             <property name="download.dir" value="${target.dir}/tmp@{script-dir}"/>
             <mkdir dir="${download.dir}" />
             <property name="downloaded.script.@{script-name}" value="${download.dir}/@{script-name}"/>
-            <get src="${script.svn.url}@{script-dir}/@{script-name}" dest="${downloaded.script.@{script-name}}"/>
+            <get src="${script.root.url}@{script-dir}/@{script-name}" dest="${downloaded.script.@{script-name}}"/>
             <checksum file="${downloaded.script.@{script-name}}" property="@{script-name}.checksum"/>
             <checksum file="@{project-root-dir}@{script-dir}/@{script-name}" property="${@{script-name}.checksum}"
                       verifyproperty="@{script-name}.checksum.match"/>

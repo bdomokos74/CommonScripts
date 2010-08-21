@@ -1,0 +1,9 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="standalone-template" basedir="."
+        default="update-standalone-template">
+
+    <target name="update-standalone-template">
+        <zip destfile="../script/template/standalone-template.zip"
+                basedir="src"
+                update="yes"/>    
+    </target>
+</project>

@@ -47,6 +47,8 @@ ant -f init.xml init${line.separator} "/>
         <get src="${script.web.url}/_ivy.xml" dest="${script.dir}/template/web/_ivy.xml"/>
         <get src="${script.web.url}/custom.xml" dest="${script.dir}/template/web/custom.xml"/>
 
+        <get src="${script.url}/template/standalone-template.zip" dest="${script.dir}/template/standalone-template.zip"/>
+
         <mkdir dir="${script.dir}/template/standalone"/>
 
         <echo message="${line.separator}

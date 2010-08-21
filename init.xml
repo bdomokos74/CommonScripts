@@ -5,9 +5,11 @@
     <property name="temp.dir" value="${target.dir}/temp"/>
 
     <property name="repo.url" value="http://github.com/astrid/CommonScripts/raw/master"/>
+
     <property name="script.url" value="${repo.url}/script"/>
     <property name="proj_root.url" value="${repo.url}/proj_root"/>
     <property name="script.lib.url" value="${script.url}/template/lib"/>
+    <property name="script.web.url" value="${script.url}/template/web"/>
 
     <target name="help">
         <echo message="${line.separator}This script can be used to download the scripts when starting a new project,${line.separator}
@@ -40,15 +42,15 @@ ant -f init.xml init${line.separator} "/>
         <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/lib/_ivy.xml"/>
         <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/lib/custom.xml"/>
 
-        <get src="${script.lib.url}/_build.xml" dest="${script.dir}/template/web/_build.xml"/>
-        <get src="${script.lib.url}/_ivy.xml" dest="${script.dir}/template/web/_ivy.xml"/>
-        <get src="${script.lib.url}/custom.xml" dest="${script.dir}/template/web/custom.xml"/>
-
         <mkdir dir="${script.dir}/template/web"/>
+        <get src="${script.web.url}/_build.xml" dest="${script.dir}/template/web/_build.xml"/>
+        <get src="${script.web.url}/_ivy.xml" dest="${script.dir}/template/web/_ivy.xml"/>
+        <get src="${script.web.url}/custom.xml" dest="${script.dir}/template/web/custom.xml"/>
+
         <mkdir dir="${script.dir}/template/standalone"/>
 
         <echo message="${line.separator}
-You can start by running:${line.separator}            ant generate-web-module -module.name=PROJNAME${line.separator}
+You can start by running:${line.separator}            ant generate-web-module -Dmodule.name=PROJNAME${line.separator}
 to set up a web module skeleton. Type${line.separator}            ant help${line.separator}
 for further information.${line.separator}
 "/>

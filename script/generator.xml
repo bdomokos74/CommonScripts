@@ -16,6 +16,7 @@
         <mkdir dir="${module.name}/src/test/resources"/>
         <mkdir dir="${module.name}/src/component-test/java"/>
         <mkdir dir="${module.name}/src/component-test/resources"/>
+        <mkdir dir="${module.name}/tomcat"/>
 
         <filterset id="moduleNameFilter">
             <filter token="MODNAME" value="${module.name}"/>
@@ -23,13 +24,17 @@
 
         <copy file="${script.dir}/template/web/custom.xml" todir="${module.name}"/>
         <copy todir="${module.name}">
-            <fileset dir="${script.dir}/template/web/**">
+            <fileset dir="${script.dir}/template/web/">
                 <include name="*"/>
             </fileset>
             <filtermapper>
                 <replacestring from="_" to=""/>
             </filtermapper>
             <filterset refid="moduleNameFilter"/>
+        </copy>
+        <copy todir="${module.name}">
+            <fileset dir="${script.dir}/template/web/tomcat"/>
+            <fileset dir="${script.dir}/template/web/src/main/webapp"/>
         </copy>
     </target>
 </project>

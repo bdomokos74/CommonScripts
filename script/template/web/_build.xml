@@ -1,5 +1,5 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="@MODNAME@"
-         default="common-lib.build-jar" basedir=".">
+         default="common-web.build-war" basedir=".">
 
     <dirname property="root.dir" file="${ant.file.@MODNAME@}"/>
     <dirname property="projects.root.dir" file="${root.dir}"/>
@@ -9,7 +9,6 @@
     <property file="${projects.root.dir}/build.properties" />
 
     <import file="${script.dir}/common-web.xml" optional="true"/>
-    <import file="${script.dir}/common-analyze.xml" optional="true"/>
 
     <import file="${root.dir}/custom.xml" optional="true"/>
 </project>

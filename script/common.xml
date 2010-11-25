@@ -50,9 +50,18 @@
 
         <antcall target="-pre-compile"/>
 
+        <condition property="compile.debug.info">
+            <or>
+                <not>
+                    <isset property="debug.info"/>
+                </not>
+                <istrue value="${debug.info}"/>
+            </or>
+        </condition>
+
         <javac srcdir="${src.dir}" includes="**/*.java" encoding="utf-8"
                destdir="${compile.dir}"
-               debug="true">
+               debug="${compile.debug.info}">
             <classpath>
                 <path refid="compile.classpath"/>
             </classpath>

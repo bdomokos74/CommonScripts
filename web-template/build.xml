@@ -1,0 +1,9 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="web-template" basedir="."
+        default="update-web-template">
+
+    <target name="update-web-template">
+        <zip destfile="../script/template/web-template.zip"
+                basedir="src"
+                update="yes"/>
+    </target>
+</project>

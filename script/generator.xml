@@ -6,52 +6,31 @@
         <echo message="TODO"/>
     </target>
 
+    <macrodef name="generate">
+        <attribute name="zipFileName"/>
+        <sequential>
+            <check-prop propname="module.name"/>
+            <property name="module.name" value="dummy"/>
+            <mkdir dir="${module.name}-tmp"/>
+
+            <unzip src="${script.dir}/template/@{zipFileName}" dest="${module.name}-tmp"/>
+
+            <filterset id="moduleNameFilter">
+                <filter token="MODNAME" value="${module.name}"/>
+            </filterset>
+            <copy todir="${module.name}">
+                <fileset dir="${module.name}-tmp"/>
+                <filterset refid="moduleNameFilter"/>
+            </copy>
+            <delete dir="${module.name}-tmp"/>
+        </sequential>
+    </macrodef>
+
     <target name="generate-web-module">
-        <check-prop propname="module.name"/>
-        <property name="module.name" value="dummy"/>
-        <mkdir dir="${module.name}/src/main/java"/>
-        <mkdir dir="${module.name}/src/main/resources"/>
-        <mkdir dir="${module.name}/src/main/webapp"/>
-        <mkdir dir="${module.name}/src/test/java"/>
-        <mkdir dir="${module.name}/src/test/resources"/>
-        <mkdir dir="${module.name}/src/component-test/java"/>
-        <mkdir dir="${module.name}/src/component-test/resources"/>
-        <mkdir dir="${module.name}/tomcat"/>
-
-        <filterset id="moduleNameFilter">
-            <filter token="MODNAME" value="${module.name}"/>
-        </filterset>
-
-        <copy file="${script.dir}/template/web/custom.xml" todir="${module.name}"/>
-        <copy todir="${module.name}">
-            <fileset dir="${script.dir}/template/web/">
-                <include name="*"/>
-            </fileset>
-            <filtermapper>
-                <replacestring from="_" to=""/>
-            </filtermapper>
-            <filterset refid="moduleNameFilter"/>
-        </copy>
-        <copy todir="${module.name}">
-            <fileset dir="${script.dir}/template/web/tomcat"/>
-            <fileset dir="${script.dir}/template/web/src/main/webapp"/>
-        </copy>
+        <generate zipFileName="web-template.zip"/>
     </target>
 
     <target name="generate-standalone-module">
-        <check-prop propname="module.name"/>
-        <property name="module.name" value="dummy"/>
-        <mkdir dir="${module.name}-tmp"/>
-
-        <unzip src="${script.dir}/template/standalone-template.zip" dest="${module.name}-tmp"/>
-
-        <filterset id="moduleNameFilter">
-            <filter token="MODNAME" value="${module.name}"/>
-        </filterset>
-        <copy todir="${module.name}">
-            <fileset dir="${module.name}-tmp"/>
-            <filterset refid="moduleNameFilter"/>
-        </copy>
-        <delete dir="${module.name}-tmp"/>
+        <generate zipFileName="standalone-template.zip"/>
     </target>
 </project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="WebApp_ID" version="2.5">
+    <context-param>
+        <param-name>baseUrl</param-name>
+        <param-value>http://localhost:38080/@MODNAME@/</param-value>
+    </context-param>
+    <display-name>@MODNAME@</display-name>
+    <welcome-file-list>
+        <!--TODO: use AuthenticateUserAction action as welcome -->
+        <welcome-file>/login.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>

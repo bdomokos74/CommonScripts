@@ -34,20 +34,27 @@
         <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="script.classpath"/>
     </target>
 
-    <property name="tomcat.install.dir" value="${target.dir}/apache-tomcat-6.0.26"/>
+    <property name="tomcat.install.dir" value="${target.dir}/apache-tomcat-6.0.29"/>
     <available file="${tomcat.install.dir}/bin" property="tomcat.installed"/>
 
     <target name="-replace-tomcat-files" if="tomcat.conf.home" depends="init-ivy">
         <copy overwrite="true" todir="${tomcat.install.dir}">
             <fileset dir="${tomcat.conf.home}"/>
         </copy>
-        <ivy:retrieve pattern="${tomcat.install.dir}/lib/[artifact].[ext]" conf="runtime"/>
-
+        <!--<ivy:retrieve pattern="${tomcat.install.dir}/lib/[artifact].[ext]" conf="runtime"/>-->
+        <!--TODO: in order to download tomcat we should use something else rather than everytime download-->
+        <!--TODO: directly -->
+        <get src="http://xenia.sote.hu/ftp/mirrors/www.apache.org//tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.zip"
+             dest="${target.dir}/tomcat.zip"/>
     </target>
 
     <target name="tomcat-install" unless="tomcat.installed" depends="init-ivy">
         <mkdir dir="${target.dir}"/>
-        <ivy:retrieve pattern="${target.dir}/tomcat.zip" conf="tomcat"/>
+        <!--<ivy:retrieve pattern="${target.dir}/tomcat.zip" conf="tomcat"/>-->
+        <!--TODO: in order to download tomcat we should use something else rather than everytime download-->
+        <!--TODO: directly -->
+        <get src="http://xenia.sote.hu/ftp/mirrors/www.apache.org//tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.zip"
+             dest="${target.dir}/tomcat.zip"/>
         <unzip src="${target.dir}/tomcat.zip" dest="${target.dir}"/>
         <copy file="${tomcat.script.dir}/tomcat-users.xml" todir="${tomcat.install.dir}/conf" overwrite="true"/>
         <antcall target="-replace-tomcat-files"/>

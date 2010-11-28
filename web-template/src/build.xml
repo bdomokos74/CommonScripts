@@ -9,6 +9,7 @@
     <property file="${projects.root.dir}/build.properties" />
 
     <import file="${script.dir}/common-web.xml" optional="true"/>
+    <import file="${script.dir}/tomcat.xml" optional="true"/>
 
     <import file="${root.dir}/custom.xml" optional="true"/>
 </project>

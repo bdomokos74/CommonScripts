@@ -1,7 +1,12 @@
 <project name="custom">
+
+    <property file="${root.dir}/tomcat.properties" />
+    <property name="tomcat.base.url" value="http://${tomcat.server}:${tomcat.port}"/>
+
     <target name="component-test" depends="run-component-test" description="Runs the component tests of the project">
         <echo message="Component test not implemented..."/>
     </target>
+
 
     <target name="-custom.init" depends="init-script">
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -20,24 +25,19 @@
             <sequential>
 
                 <waitfor maxwait="1200000" checkevery="1000" timeoutproperty="tomcat.start.timeout">
-                    <!--TODO: change to not burned url -->
-                    <http url="http://localhost:8080"/>
+                    <http url="${tomcat.base.url}"/>
                 </waitfor>
                 <fail if="tomcat.start.timeout" message="TOMCAT HAS NOT STARTED!"/>
                 <echo message="TOMCAT SUCCESSFUL STARTED"/>
 
                 <antcall target="tomcat-deploy-webapp">
-                    <param name="tomcat.server" value="localhost"/>
-                    <param name="tomcat.manager.url" value="http://localhost:8080/manager/html"/>
-                    <param name="tomcat.username" value="tomcat"/>
-                    <param name="tomcat.password" value="s3cret"/>
+                    <param name="tomcat.manager.url" value="${tomcat.base.url}/manager/html"/>
                     <param name="tomcat.webapp.name" value="@MODNAME@"/>
                     <param name="tomcat.webapp.war" value="${root.dir}/target/dist/@MODNAME@.war"/>
                 </antcall>
 
                 <waitfor maxwait="1200000" checkevery="1000" timeoutproperty="application.start.timeout">
-                    <!--TODO: change to not burned url -->
-                    <http url="http://localhost:8080/@MODNAME@/hello.jsp"/>
+                    <http url="${tomcat.base.url}/@MODNAME@/hello.jsp"/>
                 </waitfor>
 
                 <fail if="application.start.timeout" message="@MODNAME@ NOT DEPLOYED"/>
@@ -50,10 +50,7 @@
         <trycatch property="undep.try.prop">
             <try>
                 <antcall target="tomcat-undeploy-webapp">
-                    <param name="tomcat.server" value="localhost"/>
-                    <param name="tomcat.manager.url" value="http://localhost:8080/manager/html"/>
-                    <param name="tomcat.username" value="tomcat"/>
-                    <param name="tomcat.password" value="s3cret"/>
+                    <param name="tomcat.manager.url" value="${tomcat.base.url}/manager/html"/>
                     <param name="tomcat.webapp.name" value="@MODNAME@"/>
                     <param name="tomcat.webapp.war" value="${root.dir}/target/dist/@MODNAME@.war"/>
                 </antcall>

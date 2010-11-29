@@ -1,12 +1,11 @@
 <project name="custom">
 
-    <property file="${root.dir}/tomcat.properties" />
+    <property file="${root.dir}/tomcat.properties"/>
     <property name="tomcat.base.url" value="http://${tomcat.server}:${tomcat.port}"/>
 
     <target name="component-test" depends="run-component-test" description="Runs the component tests of the project">
         <echo message="Component test not implemented..."/>
     </target>
-
 
     <target name="-custom.init" depends="init-script">
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -41,7 +40,8 @@
                 </waitfor>
 
                 <fail if="application.start.timeout" message="@MODNAME@ NOT DEPLOYED"/>
-                <echo message="@MODNAME@ SUCCESSFUL STARTED"/>
+                <echo message="@MODNAME@ SUCCESSFUL STARTED${line.separator}
+@MODNAME@ is deployed to ${tomcat.base.url}/@MODNAME@/hello.jsp"/>
             </sequential>
         </parallel>
     </target>

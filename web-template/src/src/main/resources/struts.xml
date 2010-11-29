@@ -5,8 +5,6 @@
         "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-    <constant name="struts.custom.i18n.resources" value="/MessageResources"/>
-
     <constant name="struts.convention.default.parent.package" value="projDefault"/>
 
     <package name="projDefault" extends="convention-default">
